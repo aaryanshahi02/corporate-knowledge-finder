@@ -1,17 +1,16 @@
 import { useState } from 'react';
-import { Search, FileText, Loader2 } from 'lucide-react';
+import { Search, FileText, Loader2, Sparkles } from 'lucide-react';
 import { searchDocuments } from '../services/api';
 
 const highlightText = (text, query) => {
   if (!query || !text) return text;
   
-  // Basic case-insensitive highlight
   const parts = text.split(new RegExp(`(${query})`, 'gi'));
   return (
     <span>
       {parts.map((p, i) => 
         p.toLowerCase() === query.toLowerCase() ? 
-          <span key={i} className="bg-yellow-200 font-medium text-blue-900 rounded px-0.5">{p}</span> : p
+          <span key={i} className="bg-primary/20 text-primary-light font-medium rounded px-1">{p}</span> : p
       )}
     </span>
   );
@@ -42,31 +41,36 @@ const Dashboard = () => {
 
   const handleExampleQuery = (text) => {
     setQuery(text);
-    // Auto-trigger search after a brief timeout so state updates
     setTimeout(() => {
       document.getElementById('search-form')?.requestSubmit();
     }, 50);
   };
 
   return (
-    <div className={`flex flex-col items-center transition-all duration-500 ease-in-out ${hasSearched ? 'mt-4' : 'mt-24'}`}>
+    <div className={`flex flex-col items-center transition-all duration-700 ease-in-out ${hasSearched ? 'mt-4' : 'mt-24'}`}>
       {!hasSearched && (
-        <div className="text-center mb-8 fade-in">
-          <h1 className="text-4xl font-black text-dark tracking-tight mb-3">
-            Corporate K-Finder
+        <div className="text-center mb-10 animate-fade-in-up">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-medium text-accent-cyan mb-6">
+            <Sparkles size={14} className="animate-pulse" />
+            <span>AI-Powered Knowledge Retrieval</span>
+          </div>
+          <h1 className="text-5xl sm:text-6xl font-extrabold tracking-tight mb-4 text-white">
+            Discover Answers Instantly
           </h1>
-          <p className="text-lg text-gray-500">Search internal documents or ask questions</p>
+          <p className="text-xl text-text-secondary max-w-2xl mx-auto mt-4">
+            Search across your entire corporate knowledge base or ask a specific question.
+          </p>
         </div>
       )}
 
-      <div className="w-full max-w-3xl">
+      <div className="w-full max-w-3xl animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
         <form id="search-form" onSubmit={handleSearch} className="relative group">
-          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-            <Search className="h-5 w-5 text-gray-400 group-focus-within:text-primary transition-colors" />
+          <div className="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
+            <Search className="h-6 w-6 text-text-muted group-focus-within:text-primary-light transition-colors" />
           </div>
           <input
             type="text"
-            className="block w-full pl-11 pr-4 py-4 border border-gray-300 rounded-full leading-5 bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary sm:text-lg shadow-sm hover:shadow transition-shadow"
+            className="block w-full pl-16 pr-36 py-5 bg-surface/50 backdrop-blur-md border border-white/10 rounded-full leading-5 text-white placeholder-text-muted glow-focus sm:text-lg transition-all"
             placeholder="Search documents or ask a question..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -74,19 +78,25 @@ const Dashboard = () => {
           <button
             type="submit"
             disabled={loading}
-            className="absolute inset-y-2 right-2 px-4 py-2 border border-transparent text-sm font-medium rounded-full shadow-sm text-white bg-primary hover:bg-blue-700 disabled:opacity-50 transition-colors"
+            className="absolute inset-y-2 right-2 px-8 py-3 border border-transparent text-base font-semibold rounded-full text-white bg-primary hover:bg-primary-dark disabled:opacity-50 transition-all shadow-[0_0_15px_rgba(255,255,255,0.2)] hover:shadow-[0_0_25px_rgba(255,255,255,0.3)]"
           >
-            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Search'}
+            {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : 'Search'}
           </button>
         </form>
 
         {!hasSearched && (
-          <div className="mt-8 flex flex-wrap justify-center gap-2">
-            {['leave policy', 'how many leaves are allowed?', 'remote work guidelines'].map((q) => (
+          <div className="mt-10 flex flex-wrap justify-center gap-3 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+            {[
+              'leave policy', 
+              'How many leaves are employees allowed?', 
+              'database backup',
+              'What is the process for database backup?',
+              'Can interns work remotely?'
+            ].map((q) => (
               <button
                 key={q}
                 onClick={() => handleExampleQuery(q)}
-                className="px-4 py-2 border border-blue-100 rounded-full text-sm bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors"
+                className="px-5 py-2.5 border border-white/5 rounded-full text-sm bg-white/5 text-text-secondary hover:bg-white/10 hover:text-white transition-all shadow-sm backdrop-blur-sm"
               >
                 {q}
               </button>
@@ -96,28 +106,40 @@ const Dashboard = () => {
       </div>
 
       {hasSearched && (
-        <div className="w-full max-w-4xl mt-10">
-          <div className="mb-4 text-sm text-gray-500">
-            {results.length > 0 ? `Found ${results.length} relevant snippet(s)` : (!loading && 'No documents found matching your query.')}
+        <div className="w-full max-w-4xl mt-12 animate-fade-in-up">
+          <div className="mb-6 flex items-center justify-between text-sm text-text-secondary border-b border-white/10 pb-4">
+            <span>
+              {loading ? (
+                <span className="flex items-center gap-2"><Loader2 className="w-4 h-4 animate-spin"/> Searching...</span>
+              ) : results.length > 0 ? (
+                `Found ${results.length} relevant snippet(s)`
+              ) : (
+                'No documents found matching your query.'
+              )}
+            </span>
           </div>
           
-          <div className="space-y-4">
+          <div className="space-y-5">
             {results.map((result, idx) => (
-              <div key={idx} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
-                <div className="px-6 py-4 flex items-start gap-4">
-                  <div className="mt-1">
-                    <FileText className="w-6 h-6 text-gray-400" />
+              <div 
+                key={idx} 
+                className="glass-card rounded-2xl p-6"
+                style={{ animationDelay: `${idx * 0.1}s` }}
+              >
+                <div className="flex items-start gap-5">
+                  <div className="mt-1 p-3 rounded-xl bg-primary/10 border border-primary/20 text-primary-light">
+                    <FileText className="w-6 h-6" />
                   </div>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-1">
-                      <h3 className="text-lg font-semibold text-primary break-all">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-lg font-semibold text-white truncate pr-4">
                         {result.filename}
                       </h3>
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-accent-cyan/10 text-accent-cyan border border-accent-cyan/20 whitespace-nowrap">
                         {Math.round(result.score * 100)}% Match
                       </span>
                     </div>
-                    <p className="text-sm text-gray-600 leading-relaxed mt-2 whitespace-pre-wrap italic">
+                    <p className="text-sm text-text-secondary leading-relaxed mt-3 whitespace-pre-wrap italic">
                       "...{highlightText(result.chunk, query)}..."
                     </p>
                   </div>

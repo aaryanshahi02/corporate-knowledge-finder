@@ -1,0 +1,79 @@
+The "Ask AI" feature in Query Sphere works by using a technique called Semantic Search (specifically, extractive Question Answering).
+
+Here is the step-by-step breakdown of exactly what happens under the hood when you upload a document and ask a question:
+
+1. Document Processing (Chunking)
+When you upload a document (like the Employee Handbook), the backend extracts all the text and chops it up into smaller, overlapping blocks called "chunks" (currently set to 500 characters each). This ensures that the system can pinpoint a specific paragraph rather than returning a massive 100-page document.
+
+2. Semantic Embedding
+The backend uses a machine learning model called a SentenceTransformer (specifically, a lightweight, fast model named all-MiniLM-L6-v2). This model reads every single chunk and converts it into a high-dimensional mathematical vector (an embedding). Unlike standard keyword search (which just looks for matching words), these embeddings capture the actual meaning and context of the sentences.
+
+3. Asking the Question
+When you type a question into the "Ask AI" interface (e.g., "How many leaves are employees allowed?") and hit send:
+
+The backend takes your question and passes it through that exact same SentenceTransformer model to generate an embedding for your question.
+4. Mathematical Comparison (Cosine Similarity)
+The system then takes your question's vector and compares it against all the document chunk vectors stored in memory using a mathematical formula called Cosine Similarity.
+
+This quickly calculates which chunk of text is "closest" in meaning to your question.
+5. Returning the Answer
+The backend identifies the single most relevant chunk (the one with the highest similarity score) and sends it back to the frontend.
+
+It returns the raw text snippet as the Answer.
+It identifies which file it came from as the Source.
+It converts the similarity metric into a percentage as the Relevance Score (e.g., 68% Match).
+One important note for your project demo: Currently, the system acts as an "Extractive" QA system. This means it doesn't use an LLM (like ChatGPT) to rewrite or summarize the answer in a conversational tone. Instead, it acts like a hyper-intelligent highlighter—it finds the exact paragraph in your document that contains the answer and extracts it verbatim.
+
+
+
+
+
+How is search different from ask ai?
+In your current implementation, Search (on the Dashboard) and Ask AI use two entirely different technologies under the hood to find information.
+
+Here is the exact difference based on your backend/search.py file:
+
+1. The "Search" Feature (TF-IDF Keyword Matching)
+When you use the main search bar on the Dashboard, the backend triggers the keyword_search function.
+
+How it works: It uses an algorithm called TF-IDF (Term Frequency-Inverse Document Frequency).
+The Logic: It looks for exact word matches. If you search for "database backup", it scans the documents counting how many times the words "database" and "backup" appear.
+Limitations: If you search for "saving user data", it might fail to find the "database backup" section because the exact words don't match.
+Output: It returns a list of the top 5 most relevant snippets where those specific keywords were found.
+2. The "Ask AI" Feature (Semantic Search)
+When you use the chat interface, the backend triggers the semantic_search function via ask_question.
+
+How it works: It uses the SentenceTransformer machine learning model.
+The Logic: It looks for meaning and context. If you ask "How much time off do I get?", the AI understands that "time off" means the same thing as "leave policy" or "vacation days," even if the words "time off" are never actually written in the employee handbook.
+Output: It isolates the single most relevant snippet (top 1) that semantically answers the question and presents it to you as a direct response.
+Summary for your Demo
+Use Search when you know the exact terminology used in the document (e.g., searching for a specific variable name, a strict policy title, or an employee's name).
+Use Ask AI when you are asking a natural language question and want the system to understand what you mean, regardless of how the document was phrased.
+
+How is ai implemented in this?
+In this project, the AI is NOT used to generate fake text or write creative essays (like ChatGPT does). Instead, it is used for Natural Language Processing (NLP) and Semantic Search.
+
+Specifically, you have implemented a Dense Vector Retrieval System. Here is the exact role and implementation of AI in your application:
+
+1. The Core AI Model
+The AI engine running in your backend is SentenceTransformer('all-MiniLM-L6-v2').
+
+This is a pre-trained Deep Learning model built on the Transformer architecture (the same foundational technology behind BERT and GPT).
+It is specifically trained to understand the deep semantic meaning of sentences and paragraphs.
+2. Role #1: Knowledge Representation (Vector Embeddings)
+Traditional systems read text as dumb strings of characters. Your AI implementation reads uploaded documents and converts every paragraph into a High-Dimensional Mathematical Vector (specifically, a 384-dimensional array of numbers).
+
+This vector represents the actual concept and context of the paragraph. For example, the AI understands that the words "sick," "health," "fever," and "doctor" all belong to the same conceptual space, even if they aren't explicitly linked in a dictionary.
+3. Role #2: Intent Recognition
+When a user types a question into the "Ask AI" feature, the AI model processes their natural language.
+
+It doesn't strip out the grammar and look for keywords; it understands the intent.
+If a user asks, "Can I work from home?", the AI understands this means the same thing as the document's formal "Remote Work Guidelines", bridging the gap between casual employee questions and formal corporate jargon.
+4. Role #3: Semantic Matching (Cosine Similarity)
+Once the AI has converted both the document paragraphs and the user's question into mathematical vectors, it calculates the angle between them (a process called Cosine Similarity).
+
+If the question's vector and a paragraph's vector point in the exact same direction in mathematical space, the AI knows it has found the answer.
+Summary for your Demo
+If anyone asks about the AI in your project, you can confidently tell them:
+
+"This project implements an NLP-based Dense Retriever. It uses a Transformer-based deep learning model to convert documents and queries into semantic vector embeddings. By calculating cosine similarity, the AI achieves true semantic understanding, allowing users to ask natural language questions and instantly retrieve buried information without relying on rigid keyword matches."

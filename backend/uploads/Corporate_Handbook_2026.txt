@@ -1,0 +1,43 @@
+=========================================================
+          TECHSPHERE INC. - EMPLOYEE HANDBOOK 2026
+=========================================================
+
+1. INTRODUCTION
+Welcome to TechSphere Inc. This document serves as the central repository for all corporate policies, technical guidelines, and onboarding information.
+
+2. LEAVE POLICY & ATTENDANCE
+TechSphere values work-life balance. The following leave policy applies to all full-time employees:
+- Earned Leaves (EL): Employees are allowed 15 earned leaves per year.
+- Casual Leaves (CL): Employees are allowed 8 casual leaves per year for personal matters.
+- Sick Leaves (SL): Employees are entitled to 10 sick leaves annually. Medical certificates are required for sick leaves exceeding 3 consecutive days.
+To apply for a leave, employees must submit a request via the HR portal (WorkSphere) at least 48 hours in advance for CL and EL.
+
+3. REMOTE WORK & INTERNSHIP RULES
+TechSphere operates on a hybrid model for full-time employees (3 days in-office, 2 days remote).
+Regarding our internship program:
+- Interns are expected to be present in the office 5 days a week for the first month for training and onboarding.
+- After the first month, interns can work remotely for up to 2 days a week, subject to their manager's approval.
+- Interns must use company-provided laptops for all development work; personal devices are strictly prohibited due to security compliance.
+
+4. TECHNICAL DOCUMENTATION & IT PROTOCOLS
+This section outlines critical IT processes for the engineering team.
+
+4.1 Database Backup Process
+To ensure data integrity, the database backup process must be strictly followed:
+1. Automated daily snapshots are taken at 02:00 AM UTC via AWS RDS.
+2. For manual backups before major deployments, engineers must use the `pg_dump` utility and store the encrypted output in the designated secure S3 bucket (`techsphere-db-backups`).
+3. The retention period for all database backups is 90 days.
+4. The DevOps lead must perform a quarterly backup restoration drill to verify data integrity.
+
+4.2 Server Deployment
+To deploy the backend server to production, merge your code into the `main` branch. This will trigger the GitHub Actions CI/CD pipeline, which builds the Docker image, runs the test suite, and pushes the image to our Elastic Container Registry. The infrastructure will automatically perform a rolling update.
+
+5. COMPLIANCE & LEGAL
+Data Privacy Policy: TechSphere complies with GDPR and CCPA. Employee data and customer data must never be stored on local machines. All access to the production database requires MFA and VPN authentication.
+Vendor Compliance Requirements: Any third-party vendor integrating with our APIs must sign the standard NDA and undergo a security audit by our internal InfoSec team.
+
+6. PROJECT KNOWLEDGE
+- Payment Module: The core payment gateway integration (Stripe/PayPal) was developed and is currently maintained by Sarah Jenkins (Lead Backend Engineer) and Alex Chen.
+- Authentication Flow: We use OAuth 2.0 with JWT tokens. The documentation for the auth endpoints is located in the internal Confluence wiki under "Engineering / Auth Services".
+
+=========================================================

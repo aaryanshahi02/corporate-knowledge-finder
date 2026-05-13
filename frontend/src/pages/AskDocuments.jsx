@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Send, User, Bot, Loader2, BookOpen } from 'lucide-react';
+import { Send, User, Bot, Loader2, BookOpen, Sparkles } from 'lucide-react';
 import { askQuestion } from '../services/api';
 
 const AskDocuments = () => {
@@ -52,27 +52,38 @@ const AskDocuments = () => {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-8rem)]">
-      <div className="flex-1 overflow-y-auto mb-4 bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-6">
+    <div className="flex flex-col h-[calc(100vh-8rem)] max-w-4xl mx-auto w-full animate-fade-in-up">
+      <div className="mb-4">
+        <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+          <Sparkles className="text-accent-purple" size={24} /> Ask AI
+        </h1>
+        <p className="text-text-secondary text-sm">Have a conversation with your corporate knowledge base.</p>
+      </div>
+
+      <div className="flex-1 overflow-y-auto mb-6 glass-panel rounded-3xl p-6 space-y-8 scrollbar-thin scrollbar-thumb-surface-light">
         {messages.map((msg) => (
           <div key={msg.id} className={`flex gap-4 ${msg.type === 'user' ? 'flex-row-reverse' : ''}`}>
-            <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
-              msg.type === 'user' ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600'
+            <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center shadow-lg ${
+              msg.type === 'user' 
+                ? 'bg-gradient-to-br from-primary to-accent-cyan text-white' 
+                : 'bg-surface-light border border-white/10 text-primary-light'
             }`}>
               {msg.type === 'user' ? <User size={20} /> : <Bot size={20} />}
             </div>
             
-            <div className={`max-w-[75%] rounded-2xl px-5 py-3.5 ${
-              msg.type === 'user' ? 'bg-primary text-white ml-auto' : 'bg-gray-50 text-gray-800 border border-gray-100'
+            <div className={`max-w-[80%] rounded-2xl px-6 py-4 ${
+              msg.type === 'user' 
+                ? 'bg-primary/90 text-white ml-auto shadow-[0_4px_20px_rgba(255,255,255,0.15)]' 
+                : 'glass-card text-text-primary'
             }`}>
-              <p className="whitespace-pre-wrap leading-relaxed">{msg.text}</p>
+              <p className="whitespace-pre-wrap leading-relaxed text-[15px]">{msg.text}</p>
               
               {msg.source && (
-                <div className="mt-4 flex items-start gap-2 text-xs bg-white/50 p-2.5 rounded border border-gray-200 text-gray-600">
-                  <BookOpen size={14} className="mt-0.5 text-primary" />
+                <div className="mt-5 flex items-start gap-3 bg-surface/40 p-3 rounded-xl border border-white/5">
+                  <BookOpen size={16} className="mt-0.5 text-accent-cyan" />
                   <div>
-                    <span className="font-semibold block text-gray-700">Source: {msg.source}</span>
-                    <span className="opacity-80">Relevance: {Math.round(msg.score * 100)}%</span>
+                    <span className="font-semibold block text-white text-sm">Source: {msg.source}</span>
+                    <span className="text-xs text-text-muted">Relevance: {Math.round(msg.score * 100)}%</span>
                   </div>
                 </div>
               )}
@@ -81,30 +92,33 @@ const AskDocuments = () => {
         ))}
         {loading && (
           <div className="flex gap-4">
-            <div className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center bg-gray-100 text-gray-600">
+            <div className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center bg-surface-light border border-white/10 text-primary-light shadow-lg">
               <Bot size={20} />
             </div>
-            <div className="bg-gray-50 border border-gray-100 rounded-2xl px-5 py-3.5 flex items-center gap-2 text-gray-500">
-              <Loader2 className="w-5 h-5 animate-spin text-primary" />
-              Thinking...
+            <div className="glass-card rounded-2xl px-6 py-4 flex items-center gap-3 text-text-secondary">
+              <div className="flex gap-1">
+                <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+              </div>
             </div>
           </div>
         )}
         <div ref={scrollRef} />
       </div>
 
-      <form onSubmit={handleSubmit} className="flex gap-2">
+      <form onSubmit={handleSubmit} className="flex gap-3 relative">
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask a question about your documents..."
-          className="flex-1 px-5 py-4 bg-white border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent min-w-0 shadow-sm"
+          className="flex-1 px-6 py-4 bg-surface/50 backdrop-blur-md border border-white/10 rounded-2xl text-white placeholder-text-muted glow-focus shadow-lg"
         />
         <button
           type="submit"
           disabled={!input.trim() || loading}
-          className="px-5 py-4 bg-primary text-white rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 transition-colors shadow-sm"
+          className="px-6 py-4 bg-primary text-white rounded-2xl hover:bg-primary-dark focus:outline-none disabled:opacity-50 transition-all shadow-[0_0_15px_rgba(255,255,255,0.15)] hover:shadow-[0_0_25px_rgba(255,255,255,0.2)] flex items-center justify-center min-w-[72px]"
         >
           <Send size={20} />
         </button>
